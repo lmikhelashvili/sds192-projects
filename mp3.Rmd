@@ -242,6 +242,27 @@ all_rmse <- map_df(all_names, rmse_function) %>%
   mutate(name = all_names)
 ```
 
+```{r}
+more_names <- babynames %>%
+  filter(year >= 1930 & year < 2012, !is.na(n), !is.na(sex)) %>%
+  group_by(name) %>%
+  summarise(n = n()) %>%
+  select(name)
+```
+
+```{r}
+more_all_names <- array(more_names$name)
+```
+
+
+```{r}
+babynames %>%
+  filter(name == "ELizabeth" & sex == "M")
+```
+
+```{r}
+rmse_function("Elizabeth")
+```
 
 ### Step 2C: Rank and filter the list of names
 
