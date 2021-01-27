@@ -191,13 +191,13 @@ baby2 <- baby2 %>%
 
 ```{r}
 rmse_function <- function(baby){
-  baby2 %>%
+  babynames %>%
     filter(name == baby,
            year %in% 1930:2012
   ) %>%
   select(-prop) %>%
   pivot_wider(names_from = sex, values_from = n) %>%
-  mutate(pct_girls = Female/(Female + Male)) %>%
+  mutate(pct_girls = F/(F + M)) %>%
   mutate(
     error = pct_girls - 0.5,
     squared_error = error^2
@@ -224,7 +224,7 @@ fd2 <- fd_names %>%
 ```
 
 ```{r}
-all_names <- array(unique(baby2$name))
+all_names <- array(unique(babynames))
 ```
 
 ```{r}
