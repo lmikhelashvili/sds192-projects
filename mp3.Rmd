@@ -31,6 +31,10 @@ library(sds192)
 library(babynames)
 ```
 
+```{r}
+data("babynames")
+```
+
 ## Instructions
 
 > READ THE INSTRUCTIONS: https://beanumber.github.io/sds192/mod_babynames.html
@@ -115,7 +119,7 @@ ggplot(jessie, aes(x = year, y = pct_girls)) +
     panel.background = element_rect(fill = "#92bdd3"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    text = element_text(family = "Century Gothic"),
+   #text = element_text(family = "Century Gothic"),
     strip.background = element_blank(),
     strip.text = element_text(hjust = 0, face = "bold", size = 14)
   ) +
@@ -168,6 +172,46 @@ jessie %>%
 ```
 
 ### Step 2B: Compute the RMSE for all names
+
+```{r}
+new_fd <- fd_names %>%
+  left_join(babynames, by = "name") 
+```
+
+
+```{r}
+rmse_function <- function(baby){
+  babynames %>%
+    filter(name == baby,
+           year %in% 1930:2012
+  ) %>%
+  select(-prop) %>%
+  pivot_wider(names_from = sex, values_from = n) %>%
+  mutate(pct_girls = F / (F + M)) %>%
+  mutate(
+    error = pct_girls - 0.5,
+    squared_error = error^2
+  ) %>%
+  summarize(
+    mse = mean(squared_error, na.rm = TRUE),
+    rmse = sqrt(mse)
+  )
+}
+```
+
+```{r}
+names <- array(fd_names$name)
+```
+
+```{r}
+rmses <- map_df(names, rmse_function) %>%
+  mutate(name = names)
+```
+
+```{r}
+fd2 <- fd_names %>%
+  full_join(rmses, by = "name")
+```
 
 
 ### Step 2C: Rank and filter the list of names
