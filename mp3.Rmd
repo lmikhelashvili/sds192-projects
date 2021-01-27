@@ -192,12 +192,13 @@ baby2 <- baby2 %>%
 ```{r}
 rmse_function <- function(baby){
   babynames %>%
-    filter(name == baby,
-           year %in% 1930:2012
+  filter(
+    name == baby, 
+    year >= 1930 & year < 2012
   ) %>%
   select(-prop) %>%
   pivot_wider(names_from = sex, values_from = n) %>%
-  mutate(pct_girls = F/(F + M)) %>%
+  mutate(pct_girls = F / (F + M)) %>%
   mutate(
     error = pct_girls - 0.5,
     squared_error = error^2
@@ -224,29 +225,38 @@ fd2 <- fd_names %>%
 ```
 
 ```{r}
-all_names <- array(unique(babynames))
+uni_names <- babynames %>%
+  filter(1930 <= year & year < 2012) %>%
+  group_by(name) %>%
+  summarise(num_sex = n_distinct(sex)) %>%
+  filter(num_sex == 2) 
 ```
 
 ```{r}
+all_names <- array(uni_names$name) 
+```
+
+```{r}
+uni_data <- babynames %>%
+  inner_join(uni_names, by = c("name" = "name"))
+```
+
+```{r, eval = FALSE}
 all_rmse <- map_df(all_names, rmse_function) %>%
   mutate(name = all_names)
 ```
 
 ```{r}
-Names <- babynames %>%
-  group_by(name) %>%
-  summarise(n = n()) %>%
-  select(-n)
+map_df(all_names[1:40], rmse_function) %>%
+  mutate(name = all_names[1:40])
 ```
 
 ```{r}
-all_rmse <- Names %>%
-  group_by(name) %>%
-  group_modify(~rmse_function(.x))
+rmse_function("Jessie")
 ```
 
-all_names %>%
-  map_dfr(~rmse_function(.x))
+
+
 
 ### Step 2C: Rank and filter the list of names
 
