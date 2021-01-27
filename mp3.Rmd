@@ -226,7 +226,8 @@ fd2 <- fd_names %>%
 
 ```{r}
 uni_names <- babynames %>%
-  filter(1930 <= year & year < 2012) %>%
+  #filter(1930 <= year & year < 2012) %>%
+  filter(year >= 1930 & year < 2012, n <= 10000, n > 800) %>%
   group_by(name) %>%
   summarise(num_sex = n_distinct(sex)) %>%
   filter(num_sex == 2) 
