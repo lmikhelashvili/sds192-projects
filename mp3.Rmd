@@ -236,16 +236,11 @@ uni_names <- babynames %>%
 all_names <- array(uni_names$name) 
 ```
 
-```{r}
-uni_data <- babynames %>%
-  inner_join(uni_names, by = c("name" = "name"))
-```
 
 ```{r, eval = FALSE}
 all_rmse <- map_df(all_names, rmse_function) %>%
   mutate(name = all_names)
 ```
-
 
 
 ### Step 2C: Rank and filter the list of names
@@ -260,7 +255,32 @@ uni_data <- all_rmse %>%
 
 ### Step 2D: Gather the data you need to draw the time series
 
+```{r}
+unisex_year_func <- function(baby)
+  babynames %>%
+  filter(
+    name == baby, 
+    year >= 1930 & year < 2012
+  ) %>%
+  select(-prop) %>%
+  pivot_wider(names_from = sex, values_from = n) %>%
+  mutate(pct_girls = F / (F + M)) %>%
+  mutate(distance = abs(pct_girls - 0.5)) %>%
+  arrange(distance) %>%
+  head(1)
+```
+
+```{r}
+common_names <- array(uni_data$name)
+```
+
+```{r}
+uni_year <- map_df(common_names, unisex_year_func)
+```
+
 ### Step 2E: Gather the data you need to draw the points
+
+
 
 ### Step 2F: Polish the data
 
