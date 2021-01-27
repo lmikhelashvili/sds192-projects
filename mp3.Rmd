@@ -246,19 +246,17 @@ all_rmse <- map_df(all_names, rmse_function) %>%
   mutate(name = all_names)
 ```
 
-```{r}
-map_df(all_names[1:40], rmse_function) %>%
-  mutate(name = all_names[1:40])
-```
-
-```{r}
-rmse_function("Jessie")
-```
-
-
 
 
 ### Step 2C: Rank and filter the list of names
+
+```{r}
+uni_data <- all_rmse %>%
+  filter(!rmse == 0) %>%
+  arrange(rmse) %>%
+  head(35)
+```
+
 
 ### Step 2D: Gather the data you need to draw the time series
 
