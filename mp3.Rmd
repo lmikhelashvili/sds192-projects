@@ -302,12 +302,15 @@ joined_data <- time_data%>%
   mutate(ordered = fct_reorder(name_label, rank))
 ```
 
-```{r}
-#joined_data$name_label <- factor(joined_data$name_label)
-```
-
 
 ### Step 2I: Draw the plot
+
+```{r}
+uni_order <- order_data %>%
+  select(name, name_label) %>%
+  full_join(uni_year, by = "name")
+```
+
 
 ```{r}
 ggplot(joined_data, aes(x = year, y = pct_girls))+
@@ -372,7 +375,7 @@ separate_names <- year %>%
 ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_line() +
   geom_area(fill = "#eaac9e") +
-  geom_point(aes(x = year), data = year, fill = "white", pch = 21, size = 3) +
+  geom_point(aes(x = year), data = uni_order, fill = "white", pch = 21, size = 3) +
   facet_wrap(~name_label)
 ```
 
