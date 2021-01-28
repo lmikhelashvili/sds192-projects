@@ -18,6 +18,8 @@ output:
     theme: lumen
     df_print: paged
     code_folding: show
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -355,7 +357,14 @@ ggplot(jessie, aes(x = year, y = pct_girls)) +
 
 
 ```{r}
-text_names <- 
+text_comb <- rbind(jessie_context, 
+                   marion_context,
+                   jamie_context,
+                   jackie_context
+                  )
+
+text_data <- uni_order %>%
+  full_join(text_comb, by = "name")
 ```
 
 
@@ -365,7 +374,8 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_line() +
   geom_area(fill = "#eaac9e") +
   geom_point(aes(x = year), data = uni_order, fill = "white", pch = 21, size = 3) +
-  facet_wrap(~name_label)
+  facet_wrap(~name_label) +
+  geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data)
 ```
 
 
