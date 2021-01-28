@@ -339,10 +339,11 @@ new_names <- array(my_names$name)
 ```{r}
 year <- my_names %>%
   inner_join(filter_rmse, by = "name") %>%
-  filter(!is.na(pct_girls), !is.na(F), !is.na(M)) %>%
-  filter(name %in% my_names$name) %>%
+  select(-num_year) %>%
   mutate(distance = abs(pct_girls - 0.5)) %>%
+  filter(!is.na(distance)) %>%
   group_by(name) %>%
+  arrange(distance) %>%
   group_modify(head, n = 1)
 ```
 
