@@ -315,6 +315,15 @@ filter_rmse <- all_rmses %>%
 
 ### Step 2D: Gather the data you need to draw the time series
 
+
+```{r}
+time_data <- my_names %>%
+  inner_join(filter_rmse, by = "name")
+```
+
+
+### Step 2E: Gather the data you need to draw the points
+
 ```{r}
 unisex_year_func <- function(data)
   data %>%
@@ -324,17 +333,6 @@ unisex_year_func <- function(data)
   head(1)
 ```
 
-```{r}
-common_names <- array(uni_data$name)
-```
-
-```{r}
-uni_year <- unisex_year_func(my_names)
-```
-
-```{r}
-new_names <- array(my_names$name)
-```
 
 ```{r}
 year <- my_names %>%
@@ -347,14 +345,15 @@ year <- my_names %>%
   group_modify(head, n = 1)
 ```
 
-
-### Step 2E: Gather the data you need to draw the points
-
-
-
 ### Step 2F: Polish the data
 
 ### Step 2G: Create the annotations
+
+
+```{r}
+
+```
+
 
 > Hint: Read [the section in the book about customizing **gplot2** graphics](https://mdsr-book.github.io/mdsr2e/ch-vizIII.html#sec:themes)
 
