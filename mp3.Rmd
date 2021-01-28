@@ -292,14 +292,14 @@ jamie_context <- tribble(
 ```{r}
 order_data <- all_rmses%>%
   mutate(rank = dense_rank(rmse)) %>%
-  mutate(name_label = paste(rank, ". ", name)) 
+  mutate(name_label = factor(paste(rank, ". ", name))) 
 ```
 
 ```{r}
 joined_data <- time_data%>%
   left_join(order_data, by = c("name" = "name"))%>%
-  select(-c(mse.y, rmse.y, num_year.y, ))
-  # mutate(ordered = fct_reorder(rank, name_label))
+  select(-c(mse.y, rmse.y, num_year.y, ))%>%
+  mutate(ordered = fct_reorder(name_label, rank))
 ```
 
 ```{r}
@@ -357,13 +357,13 @@ separate_names <- year %>%
 ```
 
 ```{r}
-plot_func <- function(x){
+#plot_func <- function(x){
   ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_line() +
   geom_area(fill = "#eaac9e") +
-  geom_point(data = year[x, ], fill = "white", pch = 21, size = 3) +
+  geom_point(data = uni_year, fill = "white", pch = 21, size = 3) +
   facet_wrap(~name_label)
-}
+#}
 ```
 
 
