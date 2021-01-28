@@ -301,7 +301,7 @@ order_data <- all_rmses%>%
 joined_data <- time_data%>%
   left_join(order_data, by = c("name" = "name"))%>%
   select(-c(mse.y, rmse.y, num_year.y, ))%>%
-  mutate(ordered = fct_reorder(name_label, rank))
+  mutate(ordered = factor(fct_reorder(name_label, rank)))
 ```
 
 
@@ -318,7 +318,7 @@ uni_order <- order_data %>%
 ggplot(joined_data, aes(x = year, y = pct_girls))+
   geom_line()+
   geom_area(fill = "#eaac9e") +
-  facet_wrap(~name_label)
+  facet_wrap(~name_label) 
 ```
 
 ggplot(jessie, aes(x = year, y = pct_girls)) +
@@ -388,7 +388,10 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
 ```
 
 
+geom_rect(data = x, 
+fill = NA, color = "white", size = 1.9, xmin = -Inf, ymin = -Inf, ymax = Inf)
 
+expand = c(0, 0) in scale x continuous and scaly y continuous
 
 
 
