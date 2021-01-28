@@ -256,14 +256,32 @@ uni_year <- my_names %>%
 
 ### Step 2F: Polish the data
 
-
+filtered already
 
 
 ### Step 2G: Create the annotations
 
 
 ```{r}
+marion_context <- tribble(
+  ~year_label, ~vpos, ~hjust, ~name, ~text,
+  2000, 0.35, "down", "Marion", "Marion Jones wins \ngold in Olympics"
+)
 
+jackie_context <- tribble(
+  ~year_label, ~vpos, ~hjust, ~name, ~text,
+1945, 0.35, "up", "Jackie", "Jackie Robinson to \nmajor league"
+)
+
+ariel_context <- tribble(
+  ~year_label, ~vpos, ~hjust, ~name, ~text,
+  1990, 0.35, "left", "Ariel", "The Little Mermaid \nsways Ariel towards girls"
+)
+
+jamie_context <- tribble(
+  ~year_label, ~vpos, ~hjust, ~name, ~text,
+  1975, "left", "Jamie", "Jamie Hunter Cartwright \nappears on Bonanza"
+)
 ```
 
 
