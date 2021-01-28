@@ -265,6 +265,45 @@ babynames %>%
 rmse_function("Elizabeth")
 ```
 
+
+```{r}
+my_names <- babynames %>%
+  filter(year >= 1930 & year < 2012) %>%
+  select(-prop) %>%
+  pivot_wider(names_from = sex, values_from = n)
+```
+
+
+```{r}
+my_names <- my_names %>%
+  mutate(pct_girls = F/(F+M)) %>%
+  mutate(
+    error = pct_girls - 0.5,
+    squared_error = error^2
+  )
+```
+
+
+```{r}
+rmse_calc <- function(data){
+  data %>%
+    group_by(name) %>%
+    summarise(
+      mse = mean(squared_error),
+      rmse = sqrt(mse),
+      num_year = n()
+    )
+}
+```
+
+
+```{r}
+all_rmses <- rmse_calc(my_names) %>%
+  arrange(rmse) %>%
+  filter(num_year > 70) %>%
+  head(35)
+```
+
 ### Step 2C: Rank and filter the list of names
 
 ```{r}
