@@ -335,7 +335,7 @@ unisex_year_func <- function(data)
 
 
 ```{r}
-year <- my_names %>%
+uni_year <- my_names %>%
   inner_join(filter_rmse, by = "name") %>%
   select(-num_year) %>%
   mutate(distance = abs(pct_girls - 0.5)) %>%
@@ -346,6 +346,9 @@ year <- my_names %>%
 ```
 
 ### Step 2F: Polish the data
+
+
+
 
 ### Step 2G: Create the annotations
 
