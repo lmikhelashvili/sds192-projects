@@ -307,9 +307,8 @@ all_rmses <- rmse_calc(my_names) %>%
 ### Step 2C: Rank and filter the list of names
 
 ```{r}
-uni_data <- all_rmse %>%
-  filter(!rmse == 0) %>%
-  arrange(rmse) %>%
+filter_rmse <- all_rmses %>%
+  filter(num_year > 71) %>%
   head(35)
 ```
 
