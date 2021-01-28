@@ -353,8 +353,7 @@ ggplot(jessie, aes(x = year, y = pct_girls)) +
 
 ```{r}
 separate_names <- year %>%
-  select(name, year) %>%
-  inner_join(time_data, by = "name")
+  select(name, year) 
 ```
 
 ```{r}
@@ -367,6 +366,15 @@ plot_func <- function(x){
 }
 ```
 
+
+
+```{r}
+ggplot(aes(x = year, y = pct_girls), data = joined_data) +
+  geom_line() +
+  geom_area(fill = "#eaac9e") +
+  geom_point(aes(x = year), data = year, fill = "white", pch = 21, size = 3) +
+  facet_wrap(~name_label)
+```
 
 
 
