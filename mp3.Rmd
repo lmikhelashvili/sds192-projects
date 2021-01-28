@@ -289,6 +289,13 @@ jamie_context <- tribble(
 
 ### Step 2H: Order the facets
 
+```{r}
+order_data <- all_rmses%>%
+  mutate(rank_label = dense_rank(rmse))%>%
+  mutate(rank = paste(rank_label, ". ", name))
+```
+
+
 ### Step 2I: Draw the plot
 
 ## Word count
