@@ -282,7 +282,7 @@ ariel_context <- tribble(
 
 jamie_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1925, 0.35, "left", "Jamie", "Jamie Hunter Cartwright \nappears on Bonanza"
+  1930, 0.35, "left", "Jamie", "Jamie Hunter Cartwright \nappears on Bonanza"
 )
 ```
 
@@ -375,7 +375,16 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_area(fill = "#eaac9e") +
   geom_point(aes(x = year), data = uni_order, fill = "white", pch = 21, size = 3) +
   facet_wrap(~name_label) +
-  geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data)
+  geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data) +
+  theme(
+    panel.background = element_rect(fill = "#92bdd3"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+   text = element_text(#family = "Century Gothic", 
+     size = 10),
+    strip.background = element_blank(),
+    strip.text = element_text(hjust = 0, face = "bold", size = 14)
+  )
 ```
 
 
