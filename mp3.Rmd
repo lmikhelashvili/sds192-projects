@@ -267,7 +267,14 @@ filtered already
 ```{r}
 marion_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1950, 0.5, "down", "Marion", "Marion Jones wins \ngold in Olympics"
+  1950, 0.40, "down", "Marion", "Marion Jones wins \ngold in Olympics"
+)
+
+marion_segments <- tribble(
+  ~year, ~pct_girls, ~name,
+  1940, 0.43, "Marion",
+  1940, 0.5, "Marion",
+  2000, 0.5802469, "Marion"
 )
 
 jackie_context <- tribble(
@@ -275,6 +282,12 @@ jackie_context <- tribble(
 1965, 0.50, "up", "Jackie", "Jackie Robinson to \nmajor league"
 )
 
+jackie_segments <- tribble(
+  ~year, ~pct_girls, ~name,
+  1940, 0.43, "Jackie",
+  1940, 0.5, "Jackie",
+  1947, 0.4550439, "Jackie" 
+)
 ariel_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
   1990, 0.35, "left", "Ariel", "The Little Mermaid \nsways Ariel towards girls"
@@ -284,6 +297,16 @@ jamie_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
   1950, 0.35, "left", "Jamie", "Jamie Hunter Cartwright \nappears on Bonanza"
 )
+
+jamie_segments <- tribble(
+  ~year, ~pct_girls, ~name,
+  1940, 0.43, "Jamie",
+  1940, 0.5, "Jamie",
+  1970, 0.5478514, "Jamie"
+)
+
+
+
 ```
 
 
@@ -361,6 +384,14 @@ text_comb <- rbind(jessie_context,
 
 text_data <- uni_order %>%
   full_join(text_comb, by = "name")
+
+segments_comb <- rbind(jessie_segments,
+                       marion_segments,
+                       jamie_segments,
+                       jackie_segments)
+  
+segments_data <- uni_order %>%
+  full_join(segments_comb, by = c("name" = "name"))
 ```
 
 
@@ -371,6 +402,7 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_area(fill = "#eaac9e") +
   geom_point(aes(x = year), data = uni_order, fill = "white", pch = 21, size = 3) +
   facet_wrap(~ordered) +
+  geom_path(data = segments_data) +
   geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data, size = 2.5) +
   theme(
     panel.background = element_rect(fill = "#92bdd3"),
