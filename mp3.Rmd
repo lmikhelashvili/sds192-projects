@@ -19,7 +19,7 @@ output:
     df_print: paged
     code_folding: show
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -391,7 +391,7 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   )
 ```
 
-
+data 
 geom_rect(data = x, 
 fill = NA, color = "white", size = 1.9, xmin = -Inf, ymin = -Inf, ymax = Inf)
 
