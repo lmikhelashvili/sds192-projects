@@ -31,6 +31,9 @@ knitr::opts_chunk$set(
 library(tidyverse)
 library(sds192)
 library(babynames)
+#library(extrafont)
+#font_import(pattern = "C:/Windows/Fonts/Century Gothic", prompt = FALSE)
+#loadfonts()
 ```
 
 ```{r}
@@ -365,7 +368,7 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
     panel.background = element_rect(fill = "#92bdd3"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    text = element_text(family = "Century Gothic", size = 5),
+    text = element_text(size = 5),
     strip.background = element_blank(),
     strip.text = element_text(hjust = 0, face = "bold", size = 14)
   ) +
