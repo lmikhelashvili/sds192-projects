@@ -1,10 +1,10 @@
 ---
-title: "Put a real title here"
+title: "Babynames"
 subtitle: "SDS 192: MP3"
 author: 
-- name: Author One
+- name: Lika Mikhelashvili  
   affiliation: Smith College
-- name: Author Two
+- name: Swaha Bhattacharya
   affiliation: Smith College
 date: "`r format(Sys.Date(), '%B %e, %Y')`"
 output: 
@@ -36,14 +36,6 @@ library(babynames)
 ```{r}
 data("babynames")
 ```
-
-## Instructions
-
-> READ THE INSTRUCTIONS: https://beanumber.github.io/sds192/mod_babynames.html
-
-Your goal in Step 1 is to recreate this data graphic as closely as you can:
-
-![](https://beanumber.github.io/sds192/gfx/jessie.png)
 
 ## Step 1: Make the plot for "Jessie"
 
@@ -134,18 +126,6 @@ ggplot(jessie, aes(x = year, y = pct_girls)) +
 
 ## Step 2: Make the graphic for all 35 names
 
-Make [the full data graphic](https://i2.wp.com/flowingdata.com/wp-content/uploads/2013/09/most-unisex-names2.png?w=2000) with the 35 most gender-neutral names:
-
-![](https://i2.wp.com/flowingdata.com/wp-content/uploads/2013/09/most-unisex-names2.png?w=2000)
-
-Or at least, make an attempt that's as good as mine:
-
-![](https://beanumber.github.io/sds192/gfx/my_babynames.png)
-
-> Note: Please do **NOT** obsess about making this perfect. It probably can't be done! Just give it your best shot!
-
-This bit of code will create a data frame with the 35 names as ranked by FlowingData.com. You can use this to check your work, but note that to meet the standard for *computing* the names, you need to discover these names algorithmically. 
-
 ```{r}
 fd_names <- c(
   "Jessie", "Marion", "Jackie", "Alva", "Ollie",
@@ -174,8 +154,6 @@ jessie %>%
 ```
 
 ### Step 2B: Compute the RMSE for all names
-
-
 
 ```{r}
 my_names <- babynames %>%
@@ -321,8 +299,6 @@ jessie_labels_2 <- jessie_labels_2 %>%
 ```
 
 
-> Hint: Read [the section in the book about customizing **gplot2** graphics](https://mdsr-book.github.io/mdsr2e/ch-vizIII.html#sec:themes)
-
 ### Step 2H: Order the facets
 
 ```{r}
@@ -351,42 +327,7 @@ uni_order <- joined_data %>%
   full_join(uni_year, by = "name")
 ```
 
-ggplot(jessie, aes(x = year, y = pct_girls)) +
-  geom_line() +
-  geom_area(fill = "#eaac9e") +
-  geom_point(data = jessie_unisex_year, fill = "white", pch = 21, size = 3) +
-  geom_path(data = jessie_segments) +
-  geom_text(
-    data = jessie_labels, 
-    aes(label = label), 
-    color = "white"
-  ) +
-  geom_text(
-    data = jessie_context, family = "Century Gothic",
-    aes(x = year_label, y = vpos, label = text, hjust = hjust), vjust = "top"
-  ) +
-  scale_y_continuous(NULL, 
-    limits = c(0, 1),
-    labels = scales::percent
-  ) +
-  scale_x_continuous(NULL) +
-  scale_fill_manual(values = c("#eaac9e", "black")) +
-  theme(
-    panel.background = element_rect(fill = "#92bdd3"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-   #text = element_text(family = "Century Gothic"),
-    strip.background = element_blank(),
-    strip.text = element_text(hjust = 0, face = "bold", size = 14)
-  ) +
-  guides(fill = FALSE) +
-  labs(
-    title = "1. Jessie", 
-    caption = "Source: Social Security Administration | By http://flowingdata.com"
-  )
-
-
-```{r}
+```{r final-graph}
 text_comb <- rbind(jessie_context, 
                    marion_context,
                    jamie_context,
@@ -443,7 +384,10 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
     aes(label = label), 
     color = "white",
     size = 3
-   ) 
+   ) +
+  labs(
+    caption = "Source: Social Security Administration | By http://flowingdata.com"
+  )
 ```
 
 
