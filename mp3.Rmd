@@ -416,7 +416,9 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
    text = element_text(size = 5),
     strip.background = element_blank(),
     strip.text = element_text(hjust = 0, face = "bold", size = 14)
-  )
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0))
 ```
 
 data 
