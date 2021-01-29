@@ -391,6 +391,8 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
 ```
 
 
+We acknowledge the potential ethical violations of this project, which assumes only 2 genders - male and female, excluding non-binary people. So, this analysis is not inclusive of the gender minorities, which is an ethical violation of the [Data Values and Principles](https://datapractices.org/manifesto/) manifesto *inclusion* value.
+
 ## Word count
 
 ```{r word_count, message=FALSE, echo=FALSE}
@@ -406,5 +408,6 @@ In this assignment, we attempted the following [standards](https://beanumber.git
 - `r standard_button("reshape")`: We met the Reshape standard because we...
 - `r standard_button("aesthetics")`: We mastered the Aesthetics standard because we...
 - `r standard_button("markdown")`: We mastered the R Markdown standard because we...
+- `r standard_button("ethics")`: We mastered the Ethics standard because we
 
 ## References
