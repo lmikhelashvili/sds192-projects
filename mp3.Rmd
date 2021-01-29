@@ -267,12 +267,12 @@ filtered already
 ```{r}
 marion_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1970, 0.75, "down", "Marion", "Marion Jones wins \ngold in Olympics"
+  1950, 0.5, "down", "Marion", "Marion Jones wins \ngold in Olympics"
 )
 
 jackie_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-1965, 0.70, "up", "Jackie", "Jackie Robinson to \nmajor league"
+1965, 0.50, "up", "Jackie", "Jackie Robinson to \nmajor league"
 )
 
 ariel_context <- tribble(
@@ -282,7 +282,7 @@ ariel_context <- tribble(
 
 jamie_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1930, 0.35, "left", "Jamie", "Jamie Hunter Cartwright \nappears on Bonanza"
+  1950, 0.35, "left", "Jamie", "Jamie Hunter Cartwright \nappears on Bonanza"
 )
 ```
 
