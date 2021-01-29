@@ -19,7 +19,7 @@ output:
     df_print: paged
     code_folding: show
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -310,6 +310,14 @@ jessie_segments_2 <- tribble(
   1949, 0.4956897, "Jessie", "1 .  Jessie"
 )
 
+jessie_labels_2 <- tribble(
+  ~year, ~name, ~pct_girls, ~label, ~ordered,
+  1998, "Jessie", 0.8, "BOYS", "1 .  Jessie",
+  1998, "Jessie", 0.2, "GIRLS", "1 .  Jessie"
+)
+
+jessie_labels_2 <- jessie_labels_2 %>%
+  mutate(ordered = factor(ordered))
 ```
 
 
@@ -416,7 +424,11 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
     strip.text = element_text(hjust = 0, face = "bold", size = 14)
   ) +
   scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0))
+  scale_y_continuous(expand = c(0, 0)) +
+  geom_text(data = jessie_labels_2, 
+    aes(label = label), 
+    color = "white"
+   )
 ```
 
 
