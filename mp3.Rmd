@@ -267,7 +267,7 @@ filtered already
 ```{r}
 marion_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1950, 0.40, "down", "Marion", "Marion Jones wins \ngold in Olympics"
+  1980, 0.30, "down", "Marion", "Marion Jones wins \ngold in Olympics"
 )
 
 marion_segments <- tribble(
@@ -279,7 +279,7 @@ marion_segments <- tribble(
 
 jackie_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-1975, 0.50, "up", "Jackie", "Jackie Robinson to \nmajor league"
+1980, 0.35, "up", "Jackie", "Jackie Robinson to \nmajor league"
 )
 
 jackie_segments <- tribble(
@@ -299,7 +299,7 @@ jamie_context <- tribble(
 
 jamie_segments <- tribble(
   ~year, ~pct_girls, ~name, ~ordered,
-  1970, 0.48, "Jamie", "18 .  Jamie",
+  1970, 0.37, "Jamie", "18 .  Jamie",
   1970, 0.5478514, "Jamie", "18 .  Jamie"
 )
 
