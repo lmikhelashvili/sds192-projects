@@ -408,6 +408,7 @@ segments_data <- segments_comb %>%
 
 ```{r}
 ylabs <- seq(0, 1, 0.5)
+xlabs <- c(1940, 1960, 1980, 2000)
 ```
 
 
@@ -428,7 +429,8 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
     strip.text = element_text(hjust = 0, face = "bold", size = 14)
   ) +
   scale_x_continuous(expand = c(0, 0), 
-                     name = NULL
+                     name = NULL,
+                     breaks = xlabs
                      ) +
   scale_y_continuous(NULL, 
     expand = c(0, 0),
