@@ -430,7 +430,8 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   ) +
   scale_x_continuous(expand = c(0, 0), 
                      name = NULL,
-                     breaks = xlabs
+                     breaks = xlabs,
+                     labels = c("1940", "'60", "'80", "2000")
                      ) +
   scale_y_continuous(NULL, 
     expand = c(0, 0),
