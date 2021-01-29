@@ -406,6 +406,10 @@ segments_data <- segments_comb %>%
 ```
 
 
+```{r}
+ylabs <- seq(0, 1, 0.5)
+```
+
 
 ```{r}
 ggplot(aes(x = year, y = pct_girls), data = joined_data) +
@@ -427,13 +431,14 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   scale_y_continuous(NULL, 
     expand = c(0, 0),
     limits = c(0, 1),
+    breaks = ylabs, 
     labels = scales::percent
   ) +
   geom_text(data = jessie_labels_2, 
     aes(label = label), 
     color = "white",
     size = 3
-   )+
+   ) 
 ```
 
 
