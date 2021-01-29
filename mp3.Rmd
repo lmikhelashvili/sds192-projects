@@ -301,15 +301,19 @@ order_data <- all_rmses%>%
 joined_data <- time_data%>%
   left_join(order_data, by = c("name" = "name"))%>%
   select(-c(mse.y, rmse.y, num_year.y, ))%>%
-  mutate(ordered = factor(fct_reorder(name_label, rank)))
+  mutate(
+    fct_rank = factor(rank),
+    fct_name_label = factor(name_label),
+    ordered = fct_reorder(name_label, rank)
+    )
 ```
 
 
 ### Step 2I: Draw the plot
 
 ```{r}
-uni_order <- order_data %>%
-  select(name, name_label) %>%
+uni_order <- joined_data %>%
+  select(name, ordered) %>%
   full_join(uni_year, by = "name")
 ```
 
@@ -318,7 +322,7 @@ uni_order <- order_data %>%
 ggplot(joined_data, aes(x = year, y = pct_girls))+
   geom_line()+
   geom_area(fill = "#eaac9e") +
-  facet_wrap(~name_label) 
+  facet_wrap(~ordered) 
 ```
 
 ggplot(jessie, aes(x = year, y = pct_girls)) +
@@ -374,7 +378,7 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_line() +
   geom_area(fill = "#eaac9e") +
   geom_point(aes(x = year), data = uni_order, fill = "white", pch = 21, size = 3) +
-  facet_wrap(~name_label) +
+  facet_wrap(~ordered) +
   geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data) +
   theme(
     panel.background = element_rect(fill = "#92bdd3"),
