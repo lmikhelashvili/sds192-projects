@@ -81,9 +81,9 @@ jessie_context <- tribble(
 )
 
 jessie_segments <- tribble(
-  ~year, ~pct_girls, ~name,
-  1940, 0.43, "Jessie",
-  1940, 0.5, "Jessie",
+  ~year, ~pct_girls, ~name, 
+  1940, 0.43, "Jessie", 
+  1940, 0.5, "Jessie", 
   1949, 0.4956897, "Jessie"
 )
 
@@ -271,10 +271,10 @@ marion_context <- tribble(
 )
 
 marion_segments <- tribble(
-  ~year, ~pct_girls, ~name,
-  1940, 0.43, "Marion",
-  1940, 0.5, "Marion",
-  2000, 0.5802469, "Marion"
+  ~year, ~pct_girls, ~name, ~ordered,
+  1940, 0.43, "Marion", "2 .  Marion",
+  1940, 0.5, "Marion", "2 .  Marion",
+  2000, 0.5802469, "Marion", "2 .  Marion"
 )
 
 jackie_context <- tribble(
@@ -283,10 +283,10 @@ jackie_context <- tribble(
 )
 
 jackie_segments <- tribble(
-  ~year, ~pct_girls, ~name,
-  1940, 0.43, "Jackie",
-  1940, 0.5, "Jackie",
-  1947, 0.4550439, "Jackie" 
+  ~year, ~pct_girls, ~name, ~ordered,
+  1940, 0.43, "Jackie", "3 .  Jackie",
+  1940, 0.5, "Jackie", "3 .  Jackie",
+  1947, 0.4550439, "Jackie", "3 .  Jackie"
 )
 ariel_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
@@ -299,13 +299,18 @@ jamie_context <- tribble(
 )
 
 jamie_segments <- tribble(
-  ~year, ~pct_girls, ~name,
-  1940, 0.43, "Jamie",
-  1940, 0.5, "Jamie",
-  1970, 0.5478514, "Jamie"
+  ~year, ~pct_girls, ~name, ~ordered,
+  1940, 0.43, "Jamie", "18 .  Jamie",
+  1940, 0.5, "Jamie", "18 .  Jamie",
+  1970, 0.5478514, "Jamie", "18 .  Jamie"
 )
 
-
+jessie_segments_2 <- tribble(
+  ~year, ~pct_girls, ~name, ~ordered,
+  1940, 0.43, "Jessie", "1 .  Jessie",
+  1940, 0.5, "Jessie", "1 .  Jessie", 
+  1949, 0.4956897, "Jessie", "1 .  Jessie"
+)
 
 ```
 
@@ -385,13 +390,13 @@ text_comb <- rbind(jessie_context,
 text_data <- uni_order %>%
   full_join(text_comb, by = "name")
 
-segments_comb <- rbind(jessie_segments,
+segments_comb <- rbind(jessie_segments_2,
                        marion_segments,
                        jamie_segments,
                        jackie_segments)
   
-segments_data <- uni_order %>%
-  full_join(segments_comb, by = c("name" = "name"))
+segments_data <- segments_comb %>%
+  mutate(ordered = factor(ordered))
 ```
 
 
