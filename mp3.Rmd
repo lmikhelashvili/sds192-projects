@@ -353,19 +353,19 @@ xlabs <- c(1940, 1960, 1980, 2000)
 ```
 
 
-```{r, fig.height=10}
+```{r, fig.height=9}
 ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_line() +
   geom_area(fill = "#eaac9e") +
   geom_point(aes(x = year), data = uni_order, fill = "white", pch = 21, size = 3) +
-  facet_wrap(~ordered, scales = "free") +
+  facet_wrap(~ordered, scales = "free_x") +
   geom_path(data = segments_data) +
   geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data, size = 2.5) +
   theme(
     panel.background = element_rect(fill = "#92bdd3"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    text = element_text(size = 5),
+    text = element_text(family = "Century Gothic", size = 5),
     strip.background = element_blank(),
     strip.text = element_text(hjust = 0, face = "bold", size = 14)
   ) +
@@ -387,6 +387,10 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
    ) +
   labs(
     caption = "Source: Social Security Administration | By http://flowingdata.com"
+  )+
+  theme(
+    plot.caption = element_text(size = 6),
+    axis.text=element_text(size=7)
   )
 ```
 
