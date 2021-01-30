@@ -463,3 +463,4 @@ In this assignment, we attempted the following [standards](https://beanumber.git
 
 
 ## References
+Nolan, Deborah, and Jamis Perrett. 2016. “Teaching and Learning Data Visualization: Ideas and Assignments.” The American Statistician 70 (3): 260–69. https://arxiv.org/pdf/1503.00781.
