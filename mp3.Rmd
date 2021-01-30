@@ -37,6 +37,10 @@ library(babynames)
 data("babynames")
 ```
 
+Your goal in Step 1 is to recreate this data graphic as closely as you can:
+
+![](https://beanumber.github.io/sds192/gfx/jessie.png)
+
 ## Step 1: Make the plot for "Jessie"
 
 ### Step 1A: Gather the data for "Jessie"
@@ -125,6 +129,14 @@ ggplot(jessie, aes(x = year, y = pct_girls)) +
 ```
 
 ## Step 2: Make the graphic for all 35 names
+
+Make [the full data graphic](https://i2.wp.com/flowingdata.com/wp-content/uploads/2013/09/most-unisex-names2.png?w=2000) with the 35 most gender-neutral names:
+
+![](https://i2.wp.com/flowingdata.com/wp-content/uploads/2013/09/most-unisex-names2.png?w=2000)
+
+Or at least, make an attempt that's as good as mine:
+
+![](https://beanumber.github.io/sds192/gfx/my_babynames.png)
 
 ```{r}
 fd_names <- c(
