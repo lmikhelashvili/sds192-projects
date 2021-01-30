@@ -275,7 +275,7 @@ filtered already
 ```{r}
 marion_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1970, 0.30, "down", "Marion", "Marion Jones wins \ngold in Olympics"
+  1965, 0.30, "down", "Marion", "Marion Jones wins \ngold in Olympics"
 )
 
 marion_segments <- tribble(
@@ -299,7 +299,7 @@ jackie_segments <- tribble(
 
 ariel_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1940, 0.27, "left", "Ariel", "The Little Mermaid \nsways Ariel towards girls"
+  1935, 0.27, "left", "Ariel", "The Little Mermaid \nsways Ariel towards girls"
 )
 
 ariel_segments <- tribble(
@@ -311,7 +311,7 @@ ariel_segments <- tribble(
 
 jamie_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1950, 0.25, "left", "Jamie", "Jamie Hunter Cartwright \nappears on Bonanza"
+  1935, 0.25, "left", "Jamie", "Jamie Hunter Cartwright \nappears on Bonanza"
 )
 
 jamie_segments <- tribble(
@@ -394,7 +394,7 @@ xlabs <- c(1940, 1960, 1980, 2000)
 ```
 
 
-```{r, fig.height=9}
+```{r, fig.height=10}
 ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_line() +
   geom_area(fill = "#eaac9e") +
