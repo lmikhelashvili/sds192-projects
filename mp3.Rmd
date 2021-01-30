@@ -241,16 +241,6 @@ time_data <- my_names %>%
 ### Step 2E: Gather the data you need to draw the points
 
 ```{r}
-unisex_year_func <- function(data)
-  data %>%
-  group_by(name) %>%
-  mutate(distance = abs(pct_girls - 0.5)) %>%
-  arrange(distance) %>%
-  head(1)
-```
-
-
-```{r}
 uni_year <- my_names %>%
   inner_join(filter_rmse, by = c("name" = "name")) %>%
   select(-num_year) %>%
@@ -441,7 +431,7 @@ We first filtered our data to include only unisex names used in the years from 1
 
 The graphics we aimed to make is a time series graph of the `pct_girl` variable - showing what percent of babies born with a certain name were girls/boys. We used `joined_data` dataset in our `ggplot` graph with `year` on x-axis and `pct_girls` on the y-axis. We marked the year with 50-50% divide between girls and boys with a white dot and then used `facet_wrap(~ordered)` to correctly order the names according to their rank. Also, we set only one y-axis for each row of the faceted graph and gave each individual name graphs their own x-axes. We shortened the x-axis ticks labels as, for instance, 1960 = '60. Finally, we adjusted the colors, graph height, text size and position, and font.
 
-We acknowledge the potential ethical violations of this project, which assumes only 2 genders - male and female, excluding non-binary people. So, this analysis is not inclusive of the gender minorities, which is an ethical violation of the [Data Values and Principles](https://datapractices.org/manifesto/) manifesto *inclusion* value.
+We acknowledge the potential ethical violations of this data science project, which assumes only 2 genders - male and female, excluding the non-binary people. So, this analysis is not inclusive of the gender minorities, which is an ethical violation of the [Data Values and Principles](https://datapractices.org/manifesto/) manifesto ***inclusion*** value.
 
 
 ## Word count
@@ -454,12 +444,14 @@ text_stats()
 
 In this assignment, we attempted the following [standards](https://beanumber.github.io/sds192/standards.html):
 
-- `r standard_button("wrangling")`: We met the Wrangling standard because we...
-- `r standard_button("relational")`: We met the Relational standard because we...
-- `r standard_button("reshape")`: We met the Reshape standard because we...
-- `r standard_button("aesthetics")`: We mastered the Aesthetics standard because we...
-- `r standard_button("markdown")`: We mastered the R Markdown standard because we...
-- `r standard_button("ethics")`: We mastered the Ethics standard because we
+- `r standard_button("wrangling")`: We mastered the Wrangling standard because we used the verbs to successfully manipulate the data for the ultimate purpose of finding the final 35 names.
+- `r standard_button("relational")`: We mastered the Relational standard because we used left, right, inner, and full joins to include the missing data about names rmses, lables, etc.
+- `r standard_button("reshape")`: We met the Reshape standard because we used `pivot_wider()` function to optimize the data table for performance in our wrangling code and easy readability.
+- `r standard_button("aesthetics")`: We mastered the Aesthetics standard because we created a graphic using `facet_wrap()` to create individual graphs for each name, customizing the x and y axes, text size, fonts. We applied the text annotations to the correct graphs and added pointers to the year the annotations are referring to. 
+- `r standard_button("markdown")`: We mastered the R Markdown standard because we included references, hyperlinks, code chunks, and data graphics - all ordered in a logical manner. We used different text sizes and italics/bold to emphasize titles and important information.
+- `r standard_button("ethics")`: We mastered the Ethics standard because we acknowledged the possible ethical violation of the inclusion value of the Data Values and Principles manifesto in the data graphic.
+- `r standard_button("github")`: We mastered the Github standard because we filed minimal working examples as `reprex` Issues and assigned the professor/each other. We resolved a couple of merge conflicts. Cloned repositories, committed, pushed, and pulled.
+- `r standard_button("context")`: We mastered the Context standard because our data graphic tell a story of unisex names. Showing only 35 most popular names, the viewer might even find their name and discover what percentage of girls and boys were given the viewer's name in the viewer's birth year. 
 
 
 ## References
