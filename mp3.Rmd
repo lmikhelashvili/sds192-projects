@@ -116,7 +116,7 @@ ggplot(jessie, aes(x = year, y = pct_girls)) +
     panel.background = element_rect(fill = "#92bdd3"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-   #text = element_text(family = "Century Gothic"),
+   text = element_text(family = "Century Gothic"),
     strip.background = element_blank(),
     strip.text = element_text(hjust = 0, face = "bold", size = 14)
   ) +
@@ -201,14 +201,6 @@ my_names <- babynames %>%
 ```
 
 
-```{r}
-#my_names <- my_names %>%
- # mutate(pct_girls = F/(F+M)) %>%
-  #mutate(
-   # error = pct_girls - 0.5,
-    #squared_error = error^2
-  #)
-```
 
 
 ```{r}
@@ -418,7 +410,8 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
     strip.background = element_blank(),
     strip.text = element_text(hjust = 0, 
                               face = "bold", 
-                              size = 14)
+                              size = 14,
+                              family = "Century Gothic")
   ) +
   scale_x_continuous(expand = c(0, 0), 
                      name = NULL,
