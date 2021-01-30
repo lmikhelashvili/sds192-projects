@@ -237,7 +237,7 @@ filter_rmse <- all_rmses %>%
 
 ```{r}
 time_data <- my_names %>%
-  inner_join(filter_rmse, by = "name")
+  inner_join(filter_rmse, by = c("name" = "name"))
 ```
 
 
@@ -255,7 +255,7 @@ unisex_year_func <- function(data)
 
 ```{r}
 uni_year <- my_names %>%
-  inner_join(filter_rmse, by = "name") %>%
+  inner_join(filter_rmse, by = c("name" = "name")) %>%
   select(-num_year) %>%
   mutate(distance = abs(pct_girls - 0.5)) %>%
   filter(!is.na(distance)) %>%
@@ -363,7 +363,7 @@ joined_data <- time_data%>%
 ```{r}
 uni_order <- joined_data %>%
   select(name, ordered) %>%
-  full_join(uni_year, by = "name")
+  full_join(uni_year, by = c("name" = "name"))
 ```
 
 ```{r final-graph}
@@ -375,7 +375,7 @@ text_comb <- rbind(jessie_context,
                   )
 
 text_data <- uni_order %>%
-  full_join(text_comb, by = "name")
+  full_join(text_comb, by = c("name" = "name"))
 
 segments_comb <- rbind(jessie_segments_2,
                        marion_segments,
@@ -410,7 +410,7 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
     strip.background = element_blank(),
     strip.text = element_text(hjust = 0, 
                               face = "bold", 
-                              size = 14
+                              size = 14)
   ) +
   scale_x_continuous(expand = c(0, 0), 
                      name = NULL,
@@ -440,6 +440,12 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
 
 
 We acknowledge the potential ethical violations of this project, which assumes only 2 genders - male and female, excluding non-binary people. So, this analysis is not inclusive of the gender minorities, which is an ethical violation of the [Data Values and Principles](https://datapractices.org/manifesto/) manifesto *inclusion* value.
+
+
+## Our Approach
+
+We first filtered our data to include only unisex names used in the years from 1930 to 2012, but not including 2012. This produced 9238 names. Then, we used group_by and summarise the find the top 1624 most popular names from these 9238 names. Then, after mutating our data set to indicate the number of males and female babies assigned a particular name in one year, we created a function to calculate the rmses of all these names and chose the top 35 names with the smallest rmses. Following this, we created a function to calculate the most unisex years for these 35 names. 
+
 
 ## Word count
 
