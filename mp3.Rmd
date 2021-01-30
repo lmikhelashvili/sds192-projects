@@ -300,19 +300,22 @@ jackie_context <- tribble(
 
 jackie_segments <- tribble(
   ~year, ~pct_girls, ~name, ~ordered,
-  1947, 0.40, "Jackie", "4 .  Jackie",
-  1957, 0.40, "Jackie", "4 .  Jackie",
+  1957, 0.32, "Jackie", "4 .  Jackie",
+  1947, 0.32, "Jackie", "4 .  Jackie",
   1947, 0.4550439, "Jackie", "4 .  Jackie"
 )
+
 ariel_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1957, 0.35, "left", "Ariel", "The Little Mermaid \nsways Ariel towards girls"
+  1940, 0.27, "left", "Ariel", "The Little Mermaid \nsways Ariel towards girls"
 )
 
-#ariel_segments <- tribble(
-  #~year, ~pct_girls, ~name, ~ordered,
-  
-#)
+ariel_segments <- tribble(
+  ~year, ~pct_girls, ~name, ~ordered,
+  1970, 0.49, "Ariel", "16 .  Ariel",
+  1970, 0.77024595, "Ariel", "16 .  Ariel",
+  1989, 0.77024595, "Ariel", "16 .  Ariel"
+)
 
 jamie_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
@@ -385,7 +388,8 @@ text_data <- uni_order %>%
 segments_comb <- rbind(jessie_segments_2,
                        marion_segments,
                        jamie_segments,
-                       jackie_segments)
+                       jackie_segments,
+                       ariel_segments)
   
 segments_data <- segments_comb %>%
   mutate(ordered = factor(ordered))
@@ -405,14 +409,16 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_point(aes(x = year), data = uni_order, fill = "white", pch = 21, size = 3) +
   facet_wrap(~ordered, scales = "free_x") +
   geom_path(data = segments_data) +
-  geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data, size = 2.5) +
+  geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data, size = 3) +
   theme(
     panel.background = element_rect(fill = "#92bdd3"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     text = element_text(size = 5),
     strip.background = element_blank(),
-    strip.text = element_text(hjust = 0, face = "bold", size = 14)
+    strip.text = element_text(hjust = 0, 
+                              face = "bold", 
+                              size = 14)
   ) +
   scale_x_continuous(expand = c(0, 0), 
                      name = NULL,
@@ -438,6 +444,7 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
     axis.text=element_text(size=7)
   )
 ```
+
 
 
 We acknowledge the potential ethical violations of this project, which assumes only 2 genders - male and female, excluding non-binary people. So, this analysis is not inclusive of the gender minorities, which is an ethical violation of the [Data Values and Principles](https://datapractices.org/manifesto/) manifesto *inclusion* value.
