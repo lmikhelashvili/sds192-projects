@@ -409,7 +409,7 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
   geom_point(aes(x = year), data = uni_order, fill = "white", pch = 21, size = 3) +
   facet_wrap(~ordered, scales = "free_x") +
   geom_path(data = segments_data) +
-  geom_text(aes(x = year_label, y = vpos, label = text, hjust = hjust), data = text_data, size = 3) +
+  geom_text(aes(x = year_label, y = vpos, label = text, hjust =  hjust), data = text_data, size = 3, family = "Century Gothic") +
   theme(
     panel.background = element_rect(fill = "#92bdd3"),
     panel.grid.major = element_blank(),
