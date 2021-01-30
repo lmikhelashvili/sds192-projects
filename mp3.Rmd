@@ -19,7 +19,7 @@ output:
     df_print: paged
     code_folding: show
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -275,7 +275,7 @@ filtered already
 ```{r}
 marion_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1965, 0.30, "down", "Marion", "Marion Jones wins \ngold in Olympics"
+  1962, 0.30, "down", "Marion", "Marion Jones wins \ngold in Olympics"
 )
 
 marion_segments <- tribble(
@@ -410,8 +410,7 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
     strip.background = element_blank(),
     strip.text = element_text(hjust = 0, 
                               face = "bold", 
-                              size = 14,
-                              family = "Century Gothic")
+                              size = 14
   ) +
   scale_x_continuous(expand = c(0, 0), 
                      name = NULL,
