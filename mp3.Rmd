@@ -159,20 +159,55 @@ jessie %>%
 ### Step 2B: Compute the RMSE for all names
 
 ```{r}
-my_names <- babynames %>%
+uni_names <- babynames %>%
   filter(year >= 1930 & year < 2012) %>%
-  select(-prop) %>%
-  pivot_wider(names_from = sex, values_from = n)
+  group_by(name) %>%
+  summarise(num_sex = n_distinct(sex)) %>%
+  filter(num_sex == 2)
 ```
 
 
 ```{r}
-my_names <- my_names %>%
+NAME <- array(unique(uni_names$name))
+```
+
+
+```{r}
+common_names <- babynames %>%
+  filter(name %in% NAME) %>%
+  group_by(name) %>%
+  summarise(num = sum(n)) %>%
+  arrange(desc(num)) %>%
+  head(1624)
+
+
+names <- array(unique(common_names$name))
+```
+
+
+```{r}
+my_names <- babynames %>%
+  filter(name %in% names,
+         !name == "Unknown",
+         year >= 1930 & year <= 2012) %>%
+  select(-prop) %>%
+  pivot_wider(names_from = sex, values_from = n) %>%
+  filter(!is.na(F), !is.na(M)) %>%
   mutate(pct_girls = F/(F+M)) %>%
   mutate(
     error = pct_girls - 0.5,
     squared_error = error^2
-  )
+  ) 
+```
+
+
+```{r}
+#my_names <- my_names %>%
+ # mutate(pct_girls = F/(F+M)) %>%
+  #mutate(
+   # error = pct_girls - 0.5,
+    #squared_error = error^2
+  #)
 ```
 
 
@@ -253,9 +288,9 @@ marion_context <- tribble(
 
 marion_segments <- tribble(
   ~year, ~pct_girls, ~name, ~ordered,
-  1990, 0.25, "Marion", "2 .  Marion",
-  2000, 0.25, "Marion", "2 .  Marion",
-  2000, 0.5802469, "Marion", "2 .  Marion"
+  1990, 0.25, "Marion", "3 .  Marion",
+  2000, 0.25, "Marion", "3 .  Marion",
+  2000, 0.5802469, "Marion", "3 .  Marion"
 )
 
 jackie_context <- tribble(
@@ -265,13 +300,19 @@ jackie_context <- tribble(
 
 jackie_segments <- tribble(
   ~year, ~pct_girls, ~name, ~ordered,
-  1957, 0.4550439, "Jackie", "3 .  Jackie",
-  1947, 0.4550439, "Jackie", "3 .  Jackie"
+  1947, 0.40, "Jackie", "4 .  Jackie",
+  1957, 0.40, "Jackie", "4 .  Jackie",
+  1947, 0.4550439, "Jackie", "4 .  Jackie"
 )
 ariel_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
-  1990, 0.35, "left", "Ariel", "The Little Mermaid \nsways Ariel towards girls"
+  1957, 0.35, "left", "Ariel", "The Little Mermaid \nsways Ariel towards girls"
 )
+
+#ariel_segments <- tribble(
+  #~year, ~pct_girls, ~name, ~ordered,
+  
+#)
 
 jamie_context <- tribble(
   ~year_label, ~vpos, ~hjust, ~name, ~text,
@@ -280,8 +321,8 @@ jamie_context <- tribble(
 
 jamie_segments <- tribble(
   ~year, ~pct_girls, ~name, ~ordered,
-  1970, 0.37, "Jamie", "18 .  Jamie",
-  1970, 0.5478514, "Jamie", "18 .  Jamie"
+  1970, 0.37, "Jamie", "21 .  Jamie",
+  1970, 0.5478514, "Jamie", "21 .  Jamie"
 )
 
 jessie_segments_2 <- tribble(
@@ -334,7 +375,8 @@ uni_order <- joined_data %>%
 text_comb <- rbind(jessie_context, 
                    marion_context,
                    jamie_context,
-                   jackie_context
+                   jackie_context,
+                   ariel_context
                   )
 
 text_data <- uni_order %>%
