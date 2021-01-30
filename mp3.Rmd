@@ -279,7 +279,7 @@ jackie_context <- tribble(
 
 jackie_segments <- tribble(
   ~year, ~pct_girls, ~name, ~ordered,
-  1957, 0.32, "Jackie", "4 .  Jackie",
+  1954, 0.32, "Jackie", "4 .  Jackie",
   1947, 0.32, "Jackie", "4 .  Jackie",
   1947, 0.4550439, "Jackie", "4 .  Jackie"
 )
@@ -303,7 +303,8 @@ jamie_context <- tribble(
 
 jamie_segments <- tribble(
   ~year, ~pct_girls, ~name, ~ordered,
-  1970, 0.37, "Jamie", "21 .  Jamie",
+  1957, 0.40, "Jamie", "21 .  Jamie",
+  1957, 0.5478514, "Jamie", "21 .  Jamie",
   1970, 0.5478514, "Jamie", "21 .  Jamie"
 )
 
@@ -447,10 +448,10 @@ In this assignment, we attempted the following [standards](https://beanumber.git
 - `r standard_button("wrangling")`: We mastered the Wrangling standard because we used the verbs to successfully manipulate the data for the ultimate purpose of finding the final 35 names.
 - `r standard_button("relational")`: We mastered the Relational standard because we used left, right, inner, and full joins to include the missing data about names rmses, lables, etc.
 - `r standard_button("reshape")`: We met the Reshape standard because we used `pivot_wider()` function to optimize the data table for performance in our wrangling code and easy readability.
-- `r standard_button("aesthetics")`: We mastered the Aesthetics standard because we created a graphic using `facet_wrap()` to create individual graphs for each name, customizing the x and y axes, text size, fonts. We applied the text annotations to the correct graphs and added pointers to the year the annotations are referring to. 
+- `r standard_button("aesthetics")`: We mastered the Aesthetics standard because we created a graphic using `facet_wrap()` to create individual graphs for each name, customizing the x and y axes, text size, fonts. We applied the text annotations to the correct graphs and added pointers to the year the annotations are referring to. We also changed the size of the facets to make the graphics as clear as possible, without making the facets too big to view together.
 - `r standard_button("markdown")`: We mastered the R Markdown standard because we included references, hyperlinks, code chunks, and data graphics - all ordered in a logical manner. We used different text sizes and italics/bold to emphasize titles and important information.
 - `r standard_button("ethics")`: We mastered the Ethics standard because we acknowledged the possible ethical violation of the inclusion value of the Data Values and Principles manifesto in the data graphic.
-- `r standard_button("github")`: We mastered the Github standard because we filed minimal working examples as `reprex` Issues and assigned the professor/each other. We resolved a couple of merge conflicts. Cloned repositories, committed, pushed, and pulled.
+- `r standard_button("github")`: We mastered the Github standard because we filed minimal working examples as `reprex` Issues and assigned the professor/each other. We resolved a couple of merge conflicts. We also cloned repositories, committed, pushed, and pulled.
 - `r standard_button("context")`: We mastered the Context standard because our data graphic tell a story of unisex names. Showing only 35 most popular names, the viewer might even find their name and discover what percentage of girls and boys were given the viewer's name in the viewer's birth year. 
 
 
