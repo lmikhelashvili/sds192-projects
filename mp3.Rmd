@@ -438,13 +438,14 @@ ggplot(aes(x = year, y = pct_girls), data = joined_data) +
 ```
 
 
-
-We acknowledge the potential ethical violations of this project, which assumes only 2 genders - male and female, excluding non-binary people. So, this analysis is not inclusive of the gender minorities, which is an ethical violation of the [Data Values and Principles](https://datapractices.org/manifesto/) manifesto *inclusion* value.
-
-
 ## Our Approach
 
-We first filtered our data to include only unisex names used in the years from 1930 to 2012, but not including 2012. This produced 9238 names. Then, we used group_by and summarise the find the top 1624 most popular names from these 9238 names. Then, after mutating our data set to indicate the number of males and female babies assigned a particular name in one year, we created a function to calculate the rmses of all these names and chose the top 35 names with the smallest rmses. Following this, we created a function to calculate the most unisex years for these 35 names. 
+We first filtered our data to include only unisex names used in the years from 1930 to 2012, but not including 2012. This produced 9238 names. Then, we used `group_by()` and `summarize()` the find the top 1624 most popular names from these 9238 names. Then, after mutating our data set to indicate the number of males and female babies assigned a particular name in one year, we created a function to calculate the rmses of all these names and chose the top 35 names with the smallest rmses. Following this, we created a function to calculate the most unisex years for these 35 names. 
+
+Graphing:
+
+
+We acknowledge the potential ethical violations of this project, which assumes only 2 genders - male and female, excluding non-binary people. So, this analysis is not inclusive of the gender minorities, which is an ethical violation of the [Data Values and Principles](https://datapractices.org/manifesto/) manifesto *inclusion* value.
 
 
 ## Word count
