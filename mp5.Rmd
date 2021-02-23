@@ -1,0 +1,229 @@
+---
+title: "The Secret World of Biking in NYC"
+subtitle: "SDS 192: MP5"
+author: 
+- name: Lika Mikhelashvili
+  affiliation: Smith College
+- name: Malaika Kironde
+  affiliation: Smith College
+date: "`r format(Sys.Date(), '%B %e, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
+    code_folding: show
+    df_print: paged
+editor_options: 
+  chunk_output_type: inline
+references:
+- id: xie2016bookdown
+  type: book
+  title: "Bookdown: Authoring books and technical documents with R markdown"
+  author: 
+  - family: Xie
+    given: Yihui
+  issued:
+    year: 2016
+  publisher: CRC Press
+  url: https://bookdown.org/yihui/rmarkdown/
+---
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(sds192)
+library(RMySQL)
+library(leaflet)
+library(sf)
+library(ggthemes)
+library(RColorBrewer)
+db <- dbConnect(
+  MySQL(), 
+  host = "scidb.smith.edu", 
+  user = "sds192", 
+  password = "DSismfc@S", 
+  dbname = "citibike"
+)
+knitr::opts_chunk$set(
+  message = FALSE,
+  echo = TRUE, 
+  connection = db, 
+  max.print = 20
+)
+```
+
+
+
+![](citibike.png)
+
+## Introduction
+
+In a world growing increasingly aware of the impact we individually leave behind, tackling climate is of utmost importance. With cars being a large source of our carbon footprint, many have decided to seek alternative transportation means with a lower carbon footprint, such as public transport and vehicles that do not emit fumes like skateboards, roller blades and of course bicycles. This article explores the popularity of [Citi Bike](https://www.citibikenyc.com/) use in New York City. We start by examining the groups of people who use bikes the most, in terms of age and gender. We then examine the most popular Citi bike stations in New York City.
+
+Throughout the project, we use a data set from [Citi Bike website](https://www.citibikenyc.com/system-data).
+
+## Analysis of Age-Gender Distribution of Citi Bike Use
+
+The age and gender distribution of bike use in New York City is an important aspect of understanding the target population for Citi Bike use. We started this analysis by carrying out a SQL data query to aggregate the users by their gender and their birth year. This was done by creating a column summing up the total number of rides and grouping them for each gender in a given year of birth. We saved this as a dataframe entitled `age_group_trips`. We were then able to create an additional column for age in this dataframe by subtracting the year of birth from 2017, which is the year that this data was calculated. This is shown below.
+
+
+```{sql connection=db, output.var="age_groups_trips"}
+SELECT
+  t.duration,
+  t.end_station_id,
+  t.start_station_id,
+  t.user_type,
+  t.birth_year,
+  t.gender,
+  COUNT(*) AS N
+FROM trips AS t
+GROUP BY t.gender,
+  t.birth_year
+HAVING t.birth_year > 1945 AND
+  gender <> 0
+ORDER BY N DESC;
+```
+
+```{r table}
+my_data <- age_groups_trips%>%
+  mutate(gender = dplyr::recode(as.integer(gender), `1` = "Male", `2` = "Female"))%>%
+  mutate(N = N/100000)%>%
+  mutate(age = 2017 - birth_year)
+my_data
+```
+
+```{r}
+my_data %>%
+ggplot(aes(x = age, y = N, color = gender))+
+  geom_point()+
+  scale_x_continuous(name = "User's Age")+
+  scale_y_continuous(name = "Number of Citi Bike Users (100,000)")+
+  labs(
+    title = "Number of Citi Bike Users and Their Age",
+    subtitle = "User breakdown by Gender",
+    color = "User Gender",
+    caption = "Source: Citi Bike"
+  )+
+  scale_color_manual(values = c("#F781BF", "#66C2A5"))+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+```
+
+From this data graphic, it is evident to see the bell curve shape in the use of bikes of two genders, male and female. For both genders, the number of people using the bikes rose from age 0 to around age 29, where it slowly began to reduce back to 0. This makes sense as younger children may not know how to ride a bike as well as not having the means to rent their own bikes from Citi Bike. On the other hand, people usually stop carrying out strenuous physical activity as they grow older. Although the data exhibits the same shape for both male and female, the data graphic also shows us that men are much more active in terms of riding bikes, with men having more than double the number of Citi Bike use for the peak ages of around 28 to 30.
+
+In terms of ethics, this data set has a lot to consider. The data for each ride is limited to a gender of female or male, which we believe is an outdated method of seeking to know one's gender identity. This is because it forces people to acknowledge a binary method of gender identity when in reality a lot of people see gender as a spectrum and others choose not to identify with these two extremes. According to the [Data Values and Principles manifesto](https://datapractices.org/manifesto/), this compares with the sixth principle which states that one should be open to changing methods in response to new knowledge, and the tenth principle which states that one should respect and invite fair criticism while promoting the identification and open discussion of errors, risks, and unintended consequences of their work. This is because the idea of a gender-spectrum may be a relatively new idea to many, but it is important to take this into consideration when collecting data about ones gender. Furthermore, it is important to understand the distinction between sex and gender. Moreover, the inclusion value of the manifesto is violated by the data graphic since not every gender minority is represented.
+
+When analyzing the data, we also made the executive decision to filter out certain data because either it would not have been essential in drawing a conclusion or we believed it hard to verify its correctness. For example, we did not include data for which the gender was unknown. Secondly, we used only the data where the year of birth of the user was greater than 1945. This is because some of the years of birth were unknown, giving a value of 0, and others were questionable, with some being born in the 1800's. This draws on the accountability value of the Data Values and Principles manifesto, as these values are could lead to misleading conclusions and this begs one to question about the validity of the data sources. For this reason, we omitted these years from our data frame, believing that we can still make a valid conclusion without them.
+
+## Popularity of Citi Bike Stations
+
+Here we are ranking **Citi Bike** stations according to their popularity. We evaluate popularity as how many trips in total were started and ended at each station, summing `num_starts` and `num_stops` variables into a new variable `total_traffic`. The numeric values of `total_traffic` are ranked as High, Moderate, or Low popularity levels. More than **100,000** trips at an individual station is ranked as *High Popularity*, lower than **15,000** trips - *Low Popularity*, and between **15,000 and 100,000** - *Moderate Popularity*.
+
+We decided to use the popularity rankings to create an interactive leaflet map with all the Citi Bike stations in the database marked and color coded to their level of popularity. The user can select layers - High, Moderate, and Low popularities - as well as choose between a Satellite, Topographic, and OSM types of maps.
+
+From the leaflet, it is evident that most of the high popularity stations are clustered around the Midtown Manhattan, with moderate popularity stations spread out in the Midtown and Lower Manhattan. The low popularity stations are spread out in Brooklyn and other surrounding areas of Midtown and Lower Manhattan.
+
+```{sql connection=db, output.var="station_summary"}
+SELECT * FROM station_summary
+```
+
+```{r}
+station_ratings <- station_summary%>%
+  mutate(popularity_starts = ifelse(num_starts < 15000, "Low", ifelse(
+    num_starts < 50000, "Moderate", "High"
+  )))%>%
+  mutate(popularity_stops = ifelse(num_stops <15000, "Low", ifelse(
+    num_stops <50000, "Moderate", "High"
+  )))%>%
+  mutate(total_traffic = num_starts+ num_stops)%>%
+  mutate(popularity_total = ifelse(total_traffic<50000, "Low", ifelse(
+    total_traffic <100000, "Moderate", "High"
+  )))%>%
+  filter(!(lat == 0 & lon == 0))%>%
+  filter(!(station_id == 3650))%>%
+  filter(!(station_id == 3488))
+```
+
+
+```{r}
+popularity_levels <- c("High", "Moderate", "Low")
+
+station_levels <- function(popularity_arg){
+  station_ratings %>%
+    filter(popularity_total == popularity_arg)
+}
+
+popularity_groups <- map(popularity_levels, station_levels)
+
+data_pop <- popularity_groups[[3]]
+```
+
+```{r}
+station_ratings%>%
+  st_as_sf(coords = c("lon","lat"))%>%
+  st_set_crs(4326)
+
+icon.high <- makeAwesomeIcon(icon = 'bicycle', markerColor = 'red', iconColor = 'black', library = "fa")
+icon.moderate <-  makeAwesomeIcon(icon = 'bicycle', markerColor = 'orange', iconColor = 'black', library = "fa")
+icon.low <-  makeAwesomeIcon(icon = 'bicycle', markerColor = 'green', iconColor = 'black', library = "fa")
+
+pal <- colorFactor(c("red", "orange", "green"), domain = station_ratings$popularity_total)
+
+leaflet()%>%
+  addTiles(group = "OSM (default") %>%
+  addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>%
+  addProviderTiles(providers$OpenTopoMap, group = "Topographic") %>%
+  addAwesomeMarkers(data = popularity_groups[[1]],
+             group = "High Popularity Stations",
+             popup = ~paste("<b>", name, "</b><br>", popularity_total, "popularity"),
+             icon = icon.high
+             )%>%
+  addAwesomeMarkers(data = popularity_groups[[2]],
+             group ="Moderate Popularity Stations",
+             popup = ~paste("<b>", name, "</b><br>", popularity_total, "popularity"),
+             icon = icon.moderate
+             )%>%
+  addAwesomeMarkers(data = popularity_groups[[3]],
+             group = "Low Popularity Stations",
+             popup = ~paste("<b>", name, "</b><br>", popularity_total, "popularity"),
+             icon = icon.low
+             )%>%
+  addLayersControl(
+    baseGroups = c("OSM (default)", "Satellite", "Topographic"),
+    overlayGroups = c("High Popularity Stations", "Moderate Popularity Stations", "Low Popularity Stations")
+)
+```
+
+
+## Conclusion
+
+
+From this analysis we were able to come up with two conclusions. The first is that the distribution of bike users followed the same pattern for both males and females with 29 being the age at which users ride bikes the most. The second conclusion we were able to reach was that the Midtown part of New York City has the most popular bike stations. For this reason it may be beneficial for Citi Bike to supply more bikes in these areas.
+
+## Word count
+
+```{r word_count, message=FALSE, echo=FALSE}
+sds192::text_stats()
+```
+
+
+## Standards
+
+In this assignment, we attempted the following [standards](https://beanumber.github.io/sds192/standards.html):
+
+- `r standard_button("query")`: We met the Query standard because we retrieved the Citi Bike data from the SQL database server and wrote a `SELECT` query from scratch. 
+- `r standard_button("spatial")`: We met the Spatial standard because we created an `sf` object and projected the coordinates into `EPSG 4326`.
+- `r standard_button("leaflet")`: We met the Leaflet standard because we added markers to the map to mark the stations in the database. We added user-selectable layers of High, Moderate, and Low Popularity levels. We customized the marker colors to reflect the popularity levels and added a bike icon. Also, we dded the option of viewing Satellite and Topographic maps. 
+- `r standard_button("aesthetics")`: We mastered the Aesthetics standard because we used `geom_point()` to map the bike users' age bins against the number of total users. We added theme and chose colors for Female and Male genders.
+- `r standard_button("markdown")`: We mastered the R Markdown standard because we used bold and italics, added images, code chunks, and data graphics along with an interactive map.
+- `r standard_button("github")`: We mastered the R Markdown standard because we pulled, pushed, committed, and solved a merge conflict. 
+- `r standard_button("function")`: We mastered the Function standard because we use functions that accept multiple arguments and is robust to the changes in the global environment.
+- `r standard_button("iteration")`: We mastered the Iteration standard because we iterate over the popularity levels to filter out data related to each particular level.
+- `r standard_button("context")`: We mastered the Context standard because our data graphics are easily readable, with labels for the x and y axes, and color coded categorical variables. 
+- `r standard_button("wrangling")`: We mastered the Wrangling standard because we were able to use verbs like filter and mutate, as well as optimize the code for readability and performance.
+
+## References

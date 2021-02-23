@@ -1,0 +1,372 @@
+---
+title: "Classifying Trails"
+subtitle: "SDS 192: MP4"
+author: 
+- name: Lika Mikhelashvili
+  affiliation: Smith College
+- name: Jack Kendrick
+  affiliation: Smith College
+date: "`r format(Sys.Date(), '%B %e, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    fig_width: 8
+    fig_height: 8
+    fig_caption: true
+    theme: lumen
+    df_print: paged
+    code_folding: show
+editor_options: 
+  chunk_output_type: console
+references:
+- id: macleish
+  type: article
+  title: "macleish: Retrieve Data from MacLeish Field Station"
+  author: 
+  - family: Baumer
+    given: Benjamin S.
+  - family: Goueth
+    given: Rose
+  - family: Li
+    given: Wencong
+  - family: Zhang
+    given: Weijia
+  issued:
+    year: 2020
+  publisher: CRAN
+  url: https://CRAN.R-project.org/package=macleish
+  notes: "R package version 0.3.6"
+- id: mdsr
+  type: article
+  title: "Modern Data Science with R"
+  author: 
+  - family: Baumer
+    given: Benjamin S.
+  - family: Kaplan
+    given: Daniel T.
+  - family: Horton
+    given: Nicholas J.
+  issued:
+    year: 2021
+    month: 3
+  publisher: Chapman and Hall/CRC Press, Boca Raton
+  url: https://CRAN.R-project.org/package=macleish
+  notes: "R package version 0.3.6"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  echo = TRUE,
+  warning = FALSE
+)
+#remotes::install_github("coolbutuseless/ggpattern")
+library(tidyverse)
+library(sds192)
+library(sf)
+library(macleish)
+library(leaflet)
+library(lwgeom)
+library(ggthemes)
+library(ggpattern)
+library(RColorBrewer)
+library(mdsr)
+```
+
+
+In this mini project (option 1), we provide an interactive classification of the trails at the [MacLeish Field Station](https://www.smith.edu/about-smith/sustainable-smith/macleish) in West Whately, MA according to the level of the trail difficulty [@macleish]. We use a rating system based on that of the [The Shenandoah National Park](https://en.wikipedia.org/wiki/Shenandoah_National_Park), adapted due to the realatively short trail lengths at MacLeish. Using the same [rating formula](https://www.nps.gov/shen/planyourvisit/how-to-determine-hiking-difficulty.htm) from Shenandoah National Park, we classify "Easy" trails as having a rating less than 5, "Moderate" trails having a rating between 5 and 15, and "Difficult" trails having a rating above 15. 
+
+# Rating The Trails at Macleish
+
+We use the following formula to determine a rating of each trail at MacLeish:
+
+$$rating = \sqrt{2 * distance * gain}$$
+
+Where distance is measured in miles and gain is measured in feet.
+
+```{r trail_distances}
+trails_data <- macleish_layers%>%
+  pluck("trails")%>%
+  group_by(name)%>%
+  summarize() %>%
+  mutate(distance = st_length(geometry)) %>%
+  mutate(distance = units::set_units(distance, "miles"))
+```
+
+```{r getting_3m_contours}
+urls = list("http://download.massgis.digital.mass.gov/shapefiles/contours5k/hp337.zip", "http://download.massgis.digital.mass.gov/shapefiles/contours5k/hp68.zip")
+
+towns = list("Whately", "Conway")
+
+contours_gis = function(url, town){
+  local_file <- basename(url)
+  download.file(url, destfile = local_file)
+  unzip(local_file, exdir = town)
+  unlink(local_file)
+  
+  dsn <- path.expand(town)
+  contours3m <- read_sf(dsn) %>%
+  st_transform(4326)
+}
+
+contours <- map2_dfr(urls, towns, contours_gis) %>%
+  st_intersection(macleish_layers %>%
+                    pluck("boundary"))
+```
+
+```{r trail_ratings}
+trails_rating <- trails_data %>%
+  st_intersection(contours) %>%
+  st_cast("MULTIPOINT") %>%
+  st_cast("POINT") %>%
+  group_by(name, distance) %>%
+  summarise(
+    gain = max(ELEV_FT) - min(ELEV_FT)
+  ) %>%
+  mutate(rating = sqrt(2*as.numeric(gain*distance))) %>%
+  mutate(difficulty = ifelse(rating < 5, "Easy", ifelse(
+    rating < 15, "Moderate", "Difficult"
+  )))
+
+ratings <- trails_rating %>%
+  st_drop_geometry() %>%
+  mutate(difficulty = fct_reorder(factor(difficulty), dense_rank(rating))) %>%
+  arrange(difficulty)
+
+ratings
+
+trails_data <- trails_data %>%
+  left_join(ratings %>% select(-distance), by = "name") 
+
+```
+
+```{r}
+difficulties <- c("Easy", "Moderate", "Difficult")
+
+trail_levels <- function(difficulty_arg){
+  trails_data %>%
+    filter(difficulty == difficulty_arg)
+}
+
+difficulty_groups <- map(difficulties, trail_levels)
+```
+
+Here are the trails on the map of Macleish field station along with some sites of interest, including two campsites at the field station.
+
+```{r leaflet}
+campsites <- macleish_layers %>%
+  pluck("camp_sites")
+
+landmarks <- macleish_layers %>%
+  pluck("landmarks") %>%
+  filter(Label %in% c("High Point = 938ft", "Bechtel Environmental Classroom", "Trail Kiosk", "Well", "WhatelyMet Observatory & Tower"))
+
+icons <- awesomeIconList(
+  whatelymet = makeAwesomeIcon(
+    icon = "glyphicon-cloud",
+    library = "glyphicon"
+  ),
+  highpoint = makeAwesomeIcon(
+   icon = "glyphicon-arrow-up",
+   library = "glyphicon"
+  ),
+  bechtel = makeAwesomeIcon(
+   icon = "glyphicon-home",
+   library = "glyphicon"
+  ),
+  kiosk = makeAwesomeIcon(
+   icon = "glyphicon-pushpin",
+   library = "glyphicon"
+  ),
+  well = makeAwesomeIcon(
+   icon = "glyphicon-tint",
+   library = "glyphicon"
+  )
+)
+
+campsite <- makeAwesomeIcon(icon = "glyphicon-tent", library = "glyphicon")
+
+leaflet() %>%
+  addTiles(group = "OSM (default") %>%
+  addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>%
+  addProviderTiles(providers$OpenTopoMap, group = "Topographic") %>%
+  addPolylines(data = difficulty_groups[[1]], 
+               group = "Easy Trails",
+               popup = ~paste("<b>", name, "</b><br>", difficulty),
+               color = "green",
+               weight = 3,
+               highlight = highlightOptions(
+                 weight = 5,
+                 color = "green",
+                 bringToFront = TRUE)) %>%
+  addPolylines(data = difficulty_groups[[2]], 
+               group = "Moderate Trails", 
+               popup = ~paste("<b>", name, "</b><br>", difficulty),
+               color = "orange",
+               weight = 3,
+               highlight = highlightOptions(
+                 weight = 5,
+                 color = "orange",
+                 bringToFront = TRUE)) %>%
+  addPolylines(data = difficulty_groups[[3]], 
+               group = "Difficult Trails",
+               popup = ~paste("<b>", name, "</b><br>", difficulty),
+               color = "red",
+               weight = 3,
+               highlight = highlightOptions(
+                 weight = 5,
+                 color = "red",
+                 bringToFront = TRUE)) %>%
+  addAwesomeMarkers(data = campsites,
+                    icon = campsite,
+                    popup = ~name,
+                    group = "Camp Sites") %>%
+  addAwesomeMarkers(data = landmarks,
+                    icon = ~icons,
+                    popup = ~Label,
+                    group = "Landmarks",
+                    clusterOptions = markerClusterOptions()) %>%
+  addLayersControl(
+    baseGroups = c("OSM (default)", "Satellite", "Topographic"),
+    overlayGroups = c("Easy Trails", "Moderate Trails", "Difficult Trails", "Camp Sites", "Landmarks")
+)
+```
+
+# Trail Elevation Profiles
+
+We decided to make elevation profiles for three trails - Easy Out, Porcupine Trail, and Snowmobile Trail - each representing a different level of difficulty. We follow the code as described in the example from the [Modern Data Science with R](https://mdsr-book.github.io/mdsr2e/ch-spatial2.html#extended-example-trail-elevations-at-macleish) book [@mdsr].
+
+```{r}
+trail_elevations <- trails_data%>%
+  st_intersection(contours)%>%
+  st_cast("MULTIPOINT")%>%
+  st_cast("POINT")%>%
+  mutate(lat = st_coordinates(geometry)[, 2]) %>%
+  arrange(lat) %>%
+  mutate(distance_covered = as.numeric(st_distance(geometry)[, 1]))
+```
+
+```{r}
+trail_distance <- trail_elevations%>%
+  mutate(lat = st_coordinates(geometry)[,2])%>%
+  arrange(lat)%>%
+  mutate(distance_from_start = as.numeric(st_distance(geometry)[,1]))
+```
+
+```{r}
+
+context <- tribble(
+  ~distance_covered, ~ELEV_FT, ~name,
+  5, 860, "Easy Out",
+  300, 860,"Porcupine Trail",
+  1000, 900, "Snowmobile Trail"
+  )
+
+segments <- tribble(
+  ~distance_covered, ~ELEV_FT, ~name,
+  5, 850,"Easy Out",
+  300, 850, "Porcupine Trail",
+  1000, 900, "Snowmobile Trail"
+) 
+
+
+elev_profile <- function(trail_name, lat){
+  
+  trail<- trails_data %>%
+  filter(name == trail_name) %>%
+  st_intersection(contours) %>%
+  st_cast("MULTIPOINT") %>%
+  st_cast("POINT")
+  
+  if (lat){
+    trail <- trail %>%
+      mutate(lat = st_coordinates(geometry)[, 2]) %>%
+      arrange(lat) %>%
+      mutate(distance_covered = as.numeric(st_distance(geometry)[, 1]))
+  } else{
+    trail <- trail %>%
+      mutate(lon = st_coordinates(geometry)[, 1]) %>%
+      arrange(lon) %>%
+      mutate(distance_covered = as.numeric(st_distance(geometry)[, 1]))
+  }
+  
+  high_point <- trail %>%
+    arrange(desc(ELEV_FT)) %>%
+    head(1)
+  
+  trail_context <- context %>%
+    filter(name == trail_name)
+  
+
+trail_profile <- ggplot(trail, aes(x = distance_covered, y = ELEV_FT)) + 
+  geom_ribbon(aes(ymin = 700, ymax = ELEV_FT), fill = "#7C967B") +
+  geom_point(
+    data = high_point, 
+    aes(x = distance_covered, y = ELEV_FT), 
+    fill = "white", 
+    pch = 21, 
+    color = "slategrey", 
+    size = 5) +
+  geom_text(
+    data = trail_context,
+    label = paste("Highest Point: \n", high_point[[7]][[1]], "ft", sep = " "),
+    size = 5,
+    fontface = "italic") +
+  scale_y_continuous(
+    "Elevation (feet above sea level)") + 
+  scale_x_continuous(
+    "Geodesic distance from trail head (meters)") +
+  labs(
+    title = paste("Trail Elevation Map:", trail_name, sep = " "),
+    subtitle = paste("Difficulty Level:", trail[[5]][[1]],  "\nWhately, MA", sep = " "),
+    caption = "Source: macleish package for R"
+  )+
+  theme_fivethirtyeight()+
+  theme(
+    axis.title = element_text(),
+    panel.background = element_rect(fill = "#fee8c8"),
+    plot.background = element_rect(fill = "#fee8c8"),
+    panel.grid.major = element_blank(),
+    axis.ticks.length.y = unit(0., "cm")
+    )
+
+for (i in seq(from = 700, to = max(trail[[7]]) - 1, by = 25)){
+  trail_profile <- trail_profile +
+    geom_hline(yintercept = i, color = "#536E51")
+}
+
+return(trail_profile)
+  
+}
+
+profile_list = c("Easy Out", "Porcupine Trail", "Snowmobile Trail")
+
+lat_list = c(FALSE, TRUE, TRUE)
+
+map2(profile_list, lat_list, elev_profile)
+```
+
+
+## Word count
+
+```{r word_count, message=FALSE, echo=FALSE}
+text_stats()
+```
+
+## Standards
+
+In this assignment, we attempted the following [standards](https://beanumber.github.io/sds192/standards.html):
+
+- `r standard_button("spatial")`: We mastered the Spatial standard because we performed geospatial computations to calculate the new trail rating metric.
+- `r standard_button("leaflet")`: We mastered the Leaflet standard because our map uses a customised color palette and has user-selectable layers
+- `r standard_button("aesthetics")`: We mastered the Aesthetics standard because our data grphics are highly customised and use appropriate color schemes and geoms.
+- `r standard_button("markdown")`: We mastered the R Markdown standard because we formatted our report for structural effect, included all the necessary code chunks, and utilised  web links and LaTex code.
+- `r standard_button("github")`: We mastered the GitHub standard because we resolved merge conflicts, filed an Issue as `reprex`, pulled, committed, and pushed.
+- `r standard_button("context")`: We mastered the Context standard because we provide a range of features that make the graphics easily understandable and readable. For example, we color-coded the trails with popups showing their difficulty levels. We added markers that contain symbols, such as camp, water, house, etc., each related to the landmark they denote. The legend allows the user to switch trails on and off according to their difficulty levels. We also added extra information to the trail elevation profiles by adding information about the highest points.
+- `r standard_button("function")`: We mastered the Function standard because we wrote our own functions that accept multiple arguments and are robust.
+- `r standard_button("iteration")`: We mastered the Iteration standard because we iterated the `contours_gis` and `elev_profile` functions over multiple variables simultaneously.
+
+## References
+
